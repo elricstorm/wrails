@@ -6,6 +6,8 @@
     Installs the following apps:
         7zip
         7zip.commandline
+        NuGet.commandline
+        NuGet Package Explorer
         Uru
         Ruby
         Ruby Devkit
