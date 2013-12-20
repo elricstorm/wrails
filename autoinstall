@@ -15,8 +15,14 @@
     Installs the following gems:
         mysql2
         rails
-        
-    Install using the following in a command prompt or powershell prompt (copy/paste):
+      
+    Installation:
+    
+    * Right-click and open PowerShell and run as administrator
+    * Type Set-ExecutionPolicy unrestricted
+    * Accept via yes
+    * Close and reopen PowerShell as an administrator
+    * Install using the following in PowerShell (copy/paste):
     
     START http://boxstarter.org/package/nr/url?https://raw.github.com/elricstorm/wrails/master/autoinstall
 
@@ -140,7 +146,8 @@ $tools_downloads_name = "tools/downloads"
 $tools_downloads = 'C:\tools\downloads'
 CREATE-Directory -sName $tools_downloads_name -sDestination $tools_downloads
 
-# Add the tools and bin dir to path, if not already there
+# Add the tools and bin dir to path, one perma, one temp
+[Environment]::SetEnvironmentVariable("PATH",$env:path + ";C:\tools\bin", "User")
 $env:Path += ";C:\tools;C:\tools\bin"
 
 # URU
@@ -233,8 +240,7 @@ if (Install-NeededFor 'Ruby DevKit') {
     }
     Write-Host ""
 }
-# Add tools\bin to path for user
-ADD-TO-PATH $tools_bin
+
 Write-Host "Ruby Package Management Completed.";Write-Host ""
 
 # MySQL
@@ -271,10 +277,7 @@ if (Install-NeededFor 'Git') {
 } 
 
 # Mysql2 Gem
-if (Install-NeededFor 'MySQL2 Gem with dependencies') {
-    Write-Host "Installing MySQL2 Gem with Dependencies >>>" -ForegroundColor yellow 
-    Write-Host "=================================="
-    Write-Host "";Write-Host ""
+if (Install-NeededFor 'MySQL2.Gem') {
     # install mysql2 gem
     Write-Host "Installing mysql2 gem" -ForegroundColor Cyan
     Start-Process "gem" -ArgumentList "install --platform=ruby mysql2 -- --with-mysql-lib=C:\tools\mysql\current\lib --with-mysql-include=C:\tools\mysql\current\include" -Wait
