@@ -1,0 +1,294 @@
+<#
+
+    Script:      Ruby Package Management
+    Created By:  Joel Dezenzio
+
+    Installs the following apps:
+        7zip
+        7zip.commandline
+        Uru
+        Ruby
+        Ruby Devkit
+        MySQL
+        Git
+
+    Installs the following gems:
+        mysql2
+        rails
+
+#>
+
+clear
+
+Write-Host "Installing and Updating Dependencies" -ForegroundColor yellow 
+Write-Host "=================================="
+Write-Host "";Write-Host ""
+
+# 7zip
+cinst 7zip
+cinst 7zip.commandline
+
+# NuGet Commandline
+cinst nuget.commandline
+
+Start-Sleep 2
+
+Write-Host "Dependendies Completed.";Write-Host ""
+
+Write-Host "Installing Ruby Package Management" -ForegroundColor yellow 
+Write-Host "=================================="
+Write-Host "";Write-Host ""
+
+# Add an environment path variable
+Function ADD-TO-PATH {
+    param([parameter(Mandatory=$True,ValueFromPipeline=$True,Position=0)][String[]]$AddedFolder)
+    # See if a new folder has been supplied.
+    IF (!$AddedFolder) { 
+        return write-host ‘No Folder Supplied. $ENV:PATH Unchanged’ -ForegroundColor Cyan
+    }
+    # See if the new folder exists on the file system.
+    IF (!(TEST-PATH $AddedFolder)) { 
+        return write-host $AddedFolder ‘does not Exist, and cannot be added to the $ENV:PATH’ -ForegroundColor Cyan
+    }
+    # See if the new Folder is already in the path.
+    IF ($ENV:PATH | Select-String -SimpleMatch $AddedFolder) { 
+        return write-host $AddedFolder ‘already listed in $ENV:PATH’ -ForegroundColor Cyan
+    }
+    Start-Sleep 1
+    [Environment]::SetEnvironmentVariable("PATH",$env:path + ";" + $AddedFolder,"User")
+    write-host $AddedFolder 'has been added to the $ENV:PATH for User' -ForegroundColor Green
+}
+
+# Prompt to see if an install is needed for something function
+function Install-NeededFor {
+    # Install-NeededFor 'PackageName'
+    param([string] $packageName = '',[bool] $defaultAnswer = $true)
+
+    if ($packageName -eq '') {return $false}
+  
+    $yes = '6'
+    $no = '7'
+    $msgBoxTimeout='-1'
+    $defaultAnswerDisplay = 'Yes'
+    $buttonType = 0x4;
+  
+    if (!$defaultAnswer) { $defaultAnswerDisplay = 'No'; $buttonType= 0x104;}
+  
+    $answer = $msgBoxTimeout
+  
+    try {
+        $timeout = 5
+        $question = "Do you need to install $($packageName)? Defaults to `'$defaultAnswerDisplay`' after $timeout seconds"
+        $msgBox = New-Object -ComObject WScript.Shell
+        $answer = $msgBox.Popup($question, $timeout, "Install $packageName", $buttonType)
+    } catch {}
+  
+    if ($answer -eq $yes -or ($answer -eq $msgBoxTimeout -and $defaultAnswer -eq $true)) {
+        write-host "Installing $packageName >>>" -ForegroundColor Yellow
+        return $true
+    }
+  
+    write-host "Not installing $packageName" -ForegroundColor Cyan
+    return $false
+}
+
+# Create a directory function
+function CREATE-Directory {
+    param($sName, $sDestination)
+
+    Write-Host "Attempting to create" $sName "directory >>>" -ForegroundColor Yellow
+
+    $check_path = Test-Path $sDestination
+    if ($check_path) {
+        Write-Host $sName "directory already exists, bypassing..." -ForegroundColor cyan
+    } else {
+        New-Item -ItemType directory -Path $sDestination 
+        Write-Host "Created" $sName "directory." -ForegroundColor green
+    }
+    Write-Host ""
+}
+
+# Download a file via URI function
+function URI-DownloadFile {
+    param($sName, $sSource, $sDestination)
+
+    Write-Host "Beginning to download" $sName ">>>" -ForegroundColor Yellow
+    
+    $check_path = Test-Path $sDestination
+    if ($check_path) {
+        Write-Host $sName "already Downloaded, bypassing..." -ForegroundColor cyan
+    } else {
+        $wc = New-Object System.Net.WebClient
+        $wc.DownloadFile($sSource, $sDestination) 
+        Write-Host $sName "download completed." -ForegroundColor green
+    }
+    Write-Host ""
+}
+
+# == CREATE TOOLS DIRECTORY
+$tools_name = "tools"
+$tools = 'C:\tools'
+CREATE-Directory -sName $tools_name -sDestination $tools
+$tools_bin_name = "tools/bin"
+$tools_bin = 'C:\tools\bin'
+CREATE-Directory -sName $tools_bin_name -sDestination $tools_bin
+$tools_downloads_name = "tools/downloads"
+$tools_downloads = 'C:\tools\downloads'
+CREATE-Directory -sName $tools_downloads_name -sDestination $tools_downloads
+
+# Add the tools and bin dir to path, if not already there
+$env:Path += ";C:\tools;C:\tools\bin"
+
+# URU
+if (Install-NeededFor 'URU') {
+    # == DOWNLOAD URU
+    $uru_name = "URU"
+    $uru_source = "https://bitbucket.org/jonforums/uru/downloads/uru-0.7.0-windows-x86.7z"
+    $uru_destination = $tools_downloads + '\uru-0.7.0-windows-x86.7z'
+    URI-DownloadFile -sName $uru_name -sSource $uru_source -sDestination $uru_destination
+
+    # == INSTALL URU
+    $uruBuild = Test-Path "C:\tools\bin\uru_rt.exe"
+    $uruExe = "C:\tools\bin\uru_rt.exe"
+    $uruArguments = "admin install"
+    Write-Host "Beginning to install URU >>>" -ForegroundColor Yellow
+    start-sleep 1
+    if ($uruBuild) {
+        Write-Host "URU already installed, bypassing..." -ForegroundColor Cyan
+    } else {
+        start-sleep 1
+        Start-Process "7za" -ArgumentList "x -o`"$tools_bin`" -y `"$uru_destination`"" -Wait
+        Write-Host "URU install completed." -ForegroundColor green;Write-Host ""
+        # Configure URU
+        start-sleep 1
+        cd $tools_bin
+        Write-Host "Configuring URU."
+        Start-Process $uruExe $uruArguments
+    }
+    Write-Host ""
+}
+
+# Ruby
+if (Install-NeededFor 'RUBY') {
+    # == DOWNLOAD RUBY
+    $ruby_name = "Ruby"
+    $ruby_source = "http://dl.bintray.com/oneclick/rubyinstaller/rubyinstaller-2.0.0-p353.exe"
+    $ruby_destination = $tools_downloads + '\rubyinstaller-2.0.0-p353.exe'
+    URI-DownloadFile -sName $ruby_name -sSource $ruby_source -sDestination $ruby_destination
+
+    # == INSTALL RUBY
+    $rubyBuild = Test-Path "C:\tools\bin\ruby\bin\ruby.exe"
+    Write-Host "Beginning to install Ruby >>>" -ForegroundColor Yellow
+    start-sleep 1
+    if ($rubyBuild) {
+        Write-Host "Ruby already installed, bypassing..." -ForegroundColor Cyan
+    } else {
+        CREATE-Directory -sName "Ruby" -sDestination "C:\tools\bin\ruby"
+        Write-Host "Installing Ruby >>>" -ForegroundColor Yellow
+        start-sleep 1
+        Start-Process $ruby_destination -ArgumentList "/silent /dir=`"C:\tools\bin\ruby`"" -Wait
+        Write-Host "Ruby install completed." -ForegroundColor green;Write-Host ""
+        $env:Path += ";C:\tools\bin\ruby\bin"
+        #ADD-TO-PATH -AddedFolder "C:\tools\bin\ruby\bin"
+        Start-Sleep 1
+        cd $tools_bin
+        $uruAddArgs = " admin add C:\tools\bin\ruby\bin --tag system"
+        Start-Process $uruExe $uruAddArgs -Wait
+    }
+    Write-Host ""
+}
+
+# Ruby DevKit
+if (Install-NeededFor 'Ruby DevKit') {
+    # == DOWNLOAD RUBY DEVKIT
+    $rubydev_name = "DevKit"
+    $rubydev_source = "http://cdn.rubyinstaller.org/archives/devkits/DevKit-mingw64-32-4.7.2-20130224-1151-sfx.exe"
+    $rubydev_destination = $tools_downloads + '\DevKit-mingw64-32-4.7.2-20130224-1151-sfx.exe'
+    URI-DownloadFile -sName $rubydev_name -sSource $rubydev_source -sDestination $rubydev_destination
+
+    # == INSTALL RUBY DEVKIT
+    $rubydevBuild = Test-Path "C:\tools\bin\devkit\dk.rb"
+    Write-Host "Beginning to install DevKit >>>" -ForegroundColor Yellow
+    start-sleep 1
+    if ($rubydevBuild) {
+        Write-Host "DevKit already installed, bypassing..." -ForegroundColor Cyan
+    } else {
+        CREATE-Directory -sName "DevKit" -sDestination "C:\tools\bin\devkit"
+        Write-Host "Installing DevKit >>>" -ForegroundColor Yellow
+        start-sleep 1
+        Start-Process "7za" -ArgumentList "x -o`"C:\tools\bin\devkit`" -y `"$rubydev_destination`"" -Wait
+        Write-Host "DevKit install completed." -ForegroundColor green;Write-Host ""
+        Write-Host "Begin DevKit configuration >>>" -ForegroundColor yellow;
+        $env:Path += ";C:\tools\bin\devkit"
+        $devkitPath = "c:\tools\bin\devkit"
+        cd $devkitPath
+        Start-Process "ruby" -ArgumentList "dk.rb init" -Wait
+        start-sleep 1
+        Start-Process "ruby" -ArgumentList "dk.rb install" -Wait
+        Write-Host "DevKit configuration completed." -ForegroundColor green;Write-Host ""
+    }
+    Write-Host ""
+}
+# Add tools\bin to path for user
+ADD-TO-PATH $tools_bin
+Write-Host "Ruby Package Management Completed.";Write-Host ""
+
+# MySQL
+if (Install-NeededFor 'MySql') {
+    # == INSTALL MYSQL
+    $mysqlBuild = Test-Path "C:\tools\mysql"
+    Write-Host "Beginning to install MySQL >>>" -ForegroundColor Yellow
+    Start-Sleep 1
+    if ($mysqlBuild) {
+     Write-Host "MySQL already installed, bypassing..." -ForegroundColor Cyan
+    } else {
+        cinst mysql
+        $env:Path += ";C:\tools\mysql\current\bin"
+        start-sleep 1
+        # Configure mysql root and password
+        Write-Host "Configuring mysql user (root) and password (Passw0rd!)" -ForegroundColor Cyan
+        Start-Process "mysqladmin" -ArgumentList "-u root password Passw0rd!" -Wait
+        # cmd /c start powershell -command {mysqladmin -u root password Passw0rd!}
+    }
+    $dllmysql = Test-Path "C:\tools\bin\ruby\bin\libmysql.dll"
+    if ($dllmysql) {
+        # do nothing
+    } else {
+        # Copy libmysql.dll into ruby\bin
+        Write-Host "Copying libmysql.dll into current ruby bin" -ForegroundColor Cyan
+        Copy-Item -Path C:\tools\mysql\current\lib\libmysql.dll -Destination c:\tools\bin\ruby\bin
+    }
+}
+
+# GIT
+if (Install-NeededFor 'Git') {
+    cinst git
+    Write-Host "Git installed." -ForegroundColor Green;Write-Host ""
+} 
+
+# Mysql2 Gem
+if (Install-NeededFor 'MySQL2 Gem with dependencies') {
+    Write-Host "Installing MySQL2 Gem with Dependencies >>>" -ForegroundColor yellow 
+    Write-Host "=================================="
+    Write-Host "";Write-Host ""
+    # install mysql2 gem
+    Write-Host "Installing mysql2 gem" -ForegroundColor Cyan
+    Start-Process "gem" -ArgumentList "install --platform=ruby mysql2 -- --with-mysql-lib=C:\tools\mysql\current\lib --with-mysql-include=C:\tools\mysql\current\include" -Wait
+    Write-Host "mysql2 gem installed." -ForegroundColor Green;Write-Host ""
+} 
+
+# Rails Gem
+if (Install-NeededFor 'Rails Gem') {
+    # install mysql2 gem
+    Write-Host "Installing Rails gem" -ForegroundColor Cyan
+    Start-Process "gem" -ArgumentList "install rails" -Wait
+    Write-Host "Rails installed." -ForegroundColor Green;Write-Host ""
+} 
+
+<#
+
+uninstall all gems
+
+gem list | %{$_.split(' ')[0]} | %{gem uninstall -Iax $_ }
+
+#>
