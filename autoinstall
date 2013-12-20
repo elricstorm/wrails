@@ -150,7 +150,7 @@ $tools_downloads = 'C:\tools\downloads'
 CREATE-Directory -sName $tools_downloads_name -sDestination $tools_downloads
 
 # Add the tools and bin dir to path, one perma, one temp
-[Environment]::SetEnvironmentVariable("PATH",$env:path + ";C:\tools\bin", "User")
+[Environment]::SetEnvironmentVariable("PATH",$env:path + ";C:\tools\bin;C:\tools\bin\ruby\bin", "User")
 $env:Path += ";C:\tools;C:\tools\bin"
 
 # URU
@@ -282,7 +282,7 @@ if (Install-NeededFor 'Git') {
 if (Install-NeededFor 'MySQL2.Gem') {
     # install mysql2 gem
     Write-Host "Installing mysql2 gem" -ForegroundColor Cyan
-    cmd /c start powershell -command { gem install --platform=ruby mysql2 -- --with-mysql-lib=C:\tools\mysql\current\lib --with-mysql-include=C:\tools\mysql\current\include }
+    cmd /c start powershell -command {gem install --platform=ruby mysql2 -- --with-mysql-lib=C:\tools\mysql\current\lib --with-mysql-include=C:\tools\mysql\current\include}
     Write-Host "mysql2 gem installed." -ForegroundColor Green;Write-Host ""
 } 
 
@@ -290,7 +290,7 @@ if (Install-NeededFor 'MySQL2.Gem') {
 if (Install-NeededFor 'Rails Gem') {
     # install mysql2 gem
     Write-Host "Installing Rails gem" -ForegroundColor Cyan
-    cmd /c start powershell -command { gem install rails }
+    cmd /c start powershell -command {gem install rails}
     Write-Host "Rails installed." -ForegroundColor Green;Write-Host ""
 } 
 
