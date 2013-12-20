@@ -282,7 +282,6 @@ if (Install-NeededFor 'Git') {
 if (Install-NeededFor 'MySQL2.Gem') {
     # install mysql2 gem
     Write-Host "Installing mysql2 gem" -ForegroundColor Cyan
-    # cmd /c start powershell -command {gem install --platform=ruby mysql2 -- --with-mysql-lib=C:\tools\mysql\current\lib --with-mysql-include=C:\tools\mysql\current\include}
     Start-Process "gem" -ArgumentList "install --platform=ruby mysql2 -- --with-mysql-lib=C:\tools\mysql\current\lib --with-mysql-include=C:\tools\mysql\current\include" -Wait
     Write-Host "mysql2 gem installed." -ForegroundColor Green;Write-Host ""
 } 
@@ -291,7 +290,6 @@ if (Install-NeededFor 'MySQL2.Gem') {
 if (Install-NeededFor 'Rails Gem') {
     # install mysql2 gem
     Write-Host "Installing Rails gem" -ForegroundColor Cyan
-    # cmd /c start powershell -command {gem install rails}
     Start-Process "gem" -ArgumentList "install rails" -Wait
     Write-Host "Rails installed." -ForegroundColor Green;Write-Host ""
 } 
