@@ -296,8 +296,10 @@ if (Install-NeededFor 'Rails Gem') {
 
 <#
 
-uninstall all gems
+Additonal Notes:
 
-gem list | %{$_.split(' ')[0]} | %{gem uninstall -Iax $_ }
+If you need to uninstall all gems you can run the command below in PowerShell:
+     
+     gem list | %{$_.split(' ')[0]} | %{gem uninstall -Iax $_ }
 
 #>
