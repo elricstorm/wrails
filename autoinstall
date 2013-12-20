@@ -15,6 +15,10 @@
     Installs the following gems:
         mysql2
         rails
+        
+    Install using the following in a command prompt or powershell prompt (copy/paste):
+    
+    START http://boxstarter.org/package/nr/url?https://raw.github.com/elricstorm/wrails/master/autoinstall
 
 #>
 
