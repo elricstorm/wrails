@@ -304,4 +304,12 @@ If you need to uninstall all gems you can run the command below in PowerShell:
      
      gem list | %{$_.split(' ')[0]} | %{gem uninstall -Iax $_ }
 
+If you need to view all chocolatey packages without additional information use this function and call "mychoc":
+
+    function mychoc {cver all -localonly|%{$_.split(' ')[0]}|%{if($_ -ceq 'name' -Or $_ -ceq '----' -Or $_ -ceq 'Reading' -Or $_ -ceq ''){}else{write-host $_ -ForegroundColor Cyan}}}
+
+If you need to uninstall all chocolatey packages use the following function and then call "cunall"
+
+    function cunall {cver all -localonly|%{$_.split(' ')[0]}|%{if($_ -ceq 'name' -Or $_ -ceq '----' -Or $_ -ceq 'Reading' -Or $_ -ceq ''){}else{cuninst $_}}}
+
 #>
