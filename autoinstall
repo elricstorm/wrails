@@ -284,7 +284,7 @@ if (Install-NeededFor 'Git') {
 if (Install-NeededFor 'MySQL2.Gem') {
     # install mysql2 gem
     Write-Host "Installing mysql2 gem" -ForegroundColor Cyan
-    Start-Process "gem" -ArgumentList "install --platform=ruby mysql2 -- --with-mysql-lib=C:\tools\mysql\current\lib --with-mysql-include=C:\tools\mysql\current\include" -Wait
+    Start-Process "gem" -ArgumentList "install --platform=ruby mysql2 -- --with-mysql-lib=C:\tools\mysql-32bit\current\lib --with-mysql-include=C:\tools\mysql-32bit\current\include" -Wait
     Write-Host "mysql2 gem installed." -ForegroundColor Green;Write-Host ""
 } 
 
