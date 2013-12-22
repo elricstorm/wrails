@@ -257,7 +257,7 @@ if (Install-NeededFor 'MySql') {
      Write-Host "MySQL already installed, bypassing..." -ForegroundColor Cyan
     } else {
         cinst mysql-32bit
-        $env:Path += ";C:\tools\mysql\current\bin"
+        $env:Path += ";C:\tools\mysql-32bit\current\bin"
         start-sleep 1
         # Configure mysql root and password
         Write-Host "Configuring mysql user (root) and password (Passw0rd!)" -ForegroundColor Cyan
@@ -270,7 +270,7 @@ if (Install-NeededFor 'MySql') {
     } else {
         # Copy libmysql.dll into ruby\bin
         Write-Host "Copying libmysql.dll into current ruby bin" -ForegroundColor Cyan
-        Copy-Item -Path C:\tools\mysql\current\lib\libmysql.dll -Destination c:\tools\bin\ruby\bin
+        Copy-Item -Path C:\tools\mysql-32bit\current\lib\libmysql.dll -Destination c:\tools\bin\ruby\bin
     }
 }
 
