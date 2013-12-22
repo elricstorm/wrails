@@ -151,8 +151,12 @@ $tools_downloads_name = "tools/downloads"
 $tools_downloads = 'C:\tools\downloads'
 CREATE-Directory -sName $tools_downloads_name -sDestination $tools_downloads
 
-# Add the tools and bin dir to path, one perma, one temp
-[Environment]::SetEnvironmentVariable("PATH",$env:path + ";C:\tools\bin;C:\tools\bin\ruby\bin", "User")
+# Set perm and temp environment variables
+[Environment]::SetEnvironmentVariable("PATHEXT",$env:PATHEXT + ";.RB;.RBW", "User")
+[Environment]::SetEnvironmentVariable("HOME",$env:USERPROFILE, "User")
+[Environment]::SetEnvironmentVariable("GEM_HOME",$env:HOME + "\.gems", "User")
+[Environment]::SetEnvironmentVariable("GEM_PATH",$env:GEM_HOME + "\bin", "User")
+[Environment]::SetEnvironmentVariable("PATH",$env:path + ";C:\tools\bin;C:\tools\bin\ruby\bin;" + $env:GEM_PATH, "User")
 $env:Path += ";C:\tools;C:\tools\bin"
 
 # URU
