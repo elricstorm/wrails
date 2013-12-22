@@ -256,7 +256,7 @@ if (Install-NeededFor 'MySql') {
     if ($mysqlBuild) {
      Write-Host "MySQL already installed, bypassing..." -ForegroundColor Cyan
     } else {
-        cinst mysql
+        cinst mysql-32bit
         $env:Path += ";C:\tools\mysql\current\bin"
         start-sleep 1
         # Configure mysql root and password
