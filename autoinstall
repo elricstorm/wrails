@@ -30,14 +30,24 @@
 
 #>
 
-# == SET SOME PATHS
+# == SET PATHS
 $tools = 'C:\tools'
 $tools_bin = 'C:\tools\bin'
 $tools_downloads = 'C:\tools\downloads'
 $git_bin = ${env:ProgramFiles(x86)} + '\Git\bin'
 $git_cmd = ${env:ProgramFiles(x86)} + '\Git\cmd'
 $ruby_bin = 'C:\tools\bin\ruby\bin'
-$full_path = ';' + $tools_bin + ';' + $git_bin + ';' + $git_cmd + ';' + $ruby_bin
+$env:HOME = $env:USERPROFILE
+$env:GEM_HOME = $env:HOME + "\.gems"
+$env:GEM_PATH = $env:GEM_HOME + "\bin"
+$full_path = ';' + $tools_bin + ';' + $git_bin + ';' + $git_cmd + ';' + $ruby_bin + ';' + $env:GEM_HOME + ';' + $env:GEM_PATH 
+$env:Path += $full_path
+# == Set perm env. variables
+[Environment]::SetEnvironmentVariable("PATHEXT",$env:PATHEXT + ";.RB;.RBW", "User")
+[Environment]::SetEnvironmentVariable("HOME",$env:USERPROFILE, "User")
+[Environment]::SetEnvironmentVariable("GEM_HOME",$env:HOME, "User")
+[Environment]::SetEnvironmentVariable("GEM_PATH",$env:GEM_PATH, "User")
+[Environment]::SetEnvironmentVariable("PATH",$env:path + $full_path, "User")
 
 clear
 
@@ -159,15 +169,6 @@ $tools_bin_name = "tools/bin"
 CREATE-Directory -sName $tools_bin_name -sDestination $tools_bin
 $tools_downloads_name = "tools/downloads"
 CREATE-Directory -sName $tools_downloads_name -sDestination $tools_downloads
-
-# Set perm and temp environment variables
-[Environment]::SetEnvironmentVariable("PATHEXT",$env:PATHEXT + ";.RB;.RBW", "User")
-[Environment]::SetEnvironmentVariable("HOME",$env:USERPROFILE, "User")
-[Environment]::SetEnvironmentVariable("GEM_HOME",$env:HOME + "\.gems", "User")
-[Environment]::SetEnvironmentVariable("GEM_PATH",$env:GEM_HOME + "\bin", "User")
-[Environment]::SetEnvironmentVariable("PATH",$env:path + ";C:\tools\bin;C:\tools\bin\ruby\bin;" + $env:GEM_PATH, "User")
-[Environment]::SetEnvironmentVariable("PATH",$env:path + ";" + $full_path + ";" + $env:GEM_PATH, "User")
-$env:Path += ";C:\tools;C:\tools\bin"
 
 # URU
 if (Install-NeededFor 'URU') {
