@@ -172,6 +172,8 @@ $tools_bin_name = "tools/bin"
 CREATE-Directory -sName $tools_bin_name -sDestination $tools_bin
 $tools_downloads_name = "tools/downloads"
 CREATE-Directory -sName $tools_downloads_name -sDestination $tools_downloads
+$gems_name = ".gems"
+CREATE-Directory -sName $gems_name -sDestination $env:GEM_HOME
 
 # URU
 if (Install-NeededFor 'URU') {
