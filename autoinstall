@@ -30,7 +30,7 @@
 
 #>
 
-# == CREATE TOOLS DIRECTORY
+# == SET SOME PATHS
 $tools = 'C:\tools'
 $tools_bin = 'C:\tools\bin'
 $tools_downloads = 'C:\tools\downloads'
