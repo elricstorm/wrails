@@ -2,6 +2,7 @@
 
     Script:      Ruby Package Management
     Created By:  Joel Dezenzio
+    Date:        12/23/2013
 
     Installs the following apps:
         7zip
@@ -9,7 +10,7 @@
         NuGet.commandline
         NuGet Package Explorer
         Uru
-        Ruby
+        Ruby 32-bit
         Ruby Devkit
         MySQL
         Git
