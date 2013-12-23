@@ -42,12 +42,12 @@ $env:HOME = $env:USERPROFILE
 $env:GEM_HOME = $env:HOME + '\.gems'
 $env:GEM_PATH = $env:GEM_HOME + "\bin"
 $full_path = ';' + $tools_bin + ';' + $git_bin + ';' + $git_cmd + ';' + $ruby_bin + ';' + $env:GEM_HOME + ';' + $env:GEM_PATH
-$env:Path += $full_path
 [Environment]::SetEnvironmentVariable("PATHEXT",$env:PATHEXT + ";.RB;.RBW", "User")
 [Environment]::SetEnvironmentVariable("HOME",$env:USERPROFILE, "User")
 [Environment]::SetEnvironmentVariable("GEM_HOME",$env:GEM_HOME, "User")
 [Environment]::SetEnvironmentVariable("GEM_PATH",$env:GEM_PATH, "User")
 [Environment]::SetEnvironmentVariable("PATH",$env:path + $full_path, "User")
+$env:Path += $full_path
 
 clear
 
