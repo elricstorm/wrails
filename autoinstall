@@ -30,7 +30,19 @@
 
 #>
 
+# == CREATE TOOLS DIRECTORY
+$tools = 'C:\tools'
+$tools_bin = 'C:\tools\bin'
+$tools_downloads = 'C:\tools\downloads'
+$git_bin = ${env:ProgramFiles(x86)} + '\Git\bin'
+$git_cmd = ${env:ProgramFiles(x86)} + '\Git\cmd'
+$ruby_bin = 'C:\tools\bin\ruby\bin'
+$full_path = ';' + $tools_bin + ';' + $git_bin + ';' + $git_cmd + ';' + $ruby_bin
+
 clear
+
+# set variables
+
 
 Write-Host "Installing and Updating Dependencies" -ForegroundColor yellow 
 Write-Host "=================================="
@@ -142,13 +154,10 @@ function URI-DownloadFile {
 
 # == CREATE TOOLS DIRECTORY
 $tools_name = "tools"
-$tools = 'C:\tools'
 CREATE-Directory -sName $tools_name -sDestination $tools
 $tools_bin_name = "tools/bin"
-$tools_bin = 'C:\tools\bin'
 CREATE-Directory -sName $tools_bin_name -sDestination $tools_bin
 $tools_downloads_name = "tools/downloads"
-$tools_downloads = 'C:\tools\downloads'
 CREATE-Directory -sName $tools_downloads_name -sDestination $tools_downloads
 
 # Set perm and temp environment variables
@@ -157,6 +166,7 @@ CREATE-Directory -sName $tools_downloads_name -sDestination $tools_downloads
 [Environment]::SetEnvironmentVariable("GEM_HOME",$env:HOME + "\.gems", "User")
 [Environment]::SetEnvironmentVariable("GEM_PATH",$env:GEM_HOME + "\bin", "User")
 [Environment]::SetEnvironmentVariable("PATH",$env:path + ";C:\tools\bin;C:\tools\bin\ruby\bin;" + $env:GEM_PATH, "User")
+[Environment]::SetEnvironmentVariable("PATH",$env:path + ";" + $full_path + ";" + $env:GEM_PATH, "User")
 $env:Path += ";C:\tools;C:\tools\bin"
 
 # URU
@@ -208,7 +218,7 @@ if (Install-NeededFor 'RUBY') {
         start-sleep 1
         Start-Process $ruby_destination -ArgumentList "/silent /dir=`"C:\tools\bin\ruby`"" -Wait
         Write-Host "Ruby install completed." -ForegroundColor green;Write-Host ""
-        $env:Path += ";C:\tools\bin\ruby\bin"
+        $env:Path += ";" + $ruby_bin
         Start-Sleep 1
         cd $tools_bin
         $uruAddArgs = " admin add C:\tools\bin\ruby\bin --tag system"
