@@ -1,0 +1,25 @@
+<nav class="top-bar" data-topbar>
+  <ul class="title-area">
+    <li class="name">
+      <h1><%= link_to @site_title, root_url %>
+    </li>
+  </ul>
+
+  <section class="top-bar-section">
+    <!-- Right Nav Section -->
+    <ul class="right">
+      <%= f_li('Home Page', 'Home', root_url) %>
+      <li class="has-dropdown">
+        <%= link_to 'Right Button with Dropdown', '#' %>
+        <ul class="dropdown">
+          <%= f_li('Example Page', 'First link in dropdown', '#') %>
+        </ul>
+      </li>
+    </ul>
+
+    <!-- Left Nav Section -->
+    <ul class="left">
+      <%= f_li('Example Page', 'Left Nav Button', '#') %>
+    </ul>
+  </section>
+</nav>
