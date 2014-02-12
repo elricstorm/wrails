@@ -176,7 +176,8 @@ CREATE-Directory -sName $gems_name -sDestination $env:GEM_HOME
 if (Install-NeededFor 'URU') {
     # == DOWNLOAD URU
     $uru_name = "URU"
-    $uru_source = "https://bitbucket.org/jonforums/uru/downloads/uru-0.7.0-windows-x86.7z"
+    $uru_source = "https://bitbucket.org/jonforums/uru/downloads/uru-0.7.3-windows-x86.7z"
+    # $uru_source = "https://bitbucket.org/jonforums/uru/downloads/uru-0.7.0-windows-x86.7z"
     $uru_destination = $tools_downloads + '\uru-0.7.0-windows-x86.7z'
     URI-DownloadFile -sName $uru_name -sSource $uru_source -sDestination $uru_destination
 
